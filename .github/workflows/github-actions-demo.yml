@@ -1,10 +1,12 @@
 name: MA - Continuous Integration
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+# run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
   mubshir-compile:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v1
       - run: cd backend
       - run: npm i
       - run: npm run build
