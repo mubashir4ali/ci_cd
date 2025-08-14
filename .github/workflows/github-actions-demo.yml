@@ -2,11 +2,48 @@ name: MA - Continuous Integration
 # run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
-  mubshir-compile:
+  # mubashir-compile:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
+  #     # - run: cd backend
+  #     # go to the directory and run the commandcs
+  #     - run: cd backend && npm i
+  #     - run: cd backend && npm run build
+
+  mubashir-compile-v2:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: MA - Cache Node Modules
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          key: node-modules-cache
+      
+      # Using names, because name steps are more descriptive
+      - name: MA - Checkout
         uses: actions/checkout@v1
-      # - run: cd backend
-      - run: cd backend && npm i
-      - run: cd backend && npm run build
+
+      - name: MA - Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      
+      - name: MA - Install Dependencies
+        run: cd backend && npm i
+
+      - name: MA - Build
+        run: cd backend && npm run build
+
+      # Having a zip file, I can send directly to elastic beanslack etc...
+      - name: MA - Generate Artifact
+        run: cd backend/build && zip -r artifact.zip ./ -x '*.git*'
+
+      - name: MA - Store Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-artifact
+          path: backend/build/artifact.zip
+      
