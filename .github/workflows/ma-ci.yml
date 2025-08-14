@@ -12,14 +12,14 @@ jobs:
   #     - run: cd backend && npm i
   #     - run: cd backend && npm run build
 
-  mubashir-compile-v2:
+  mubashir-build:
     runs-on: ubuntu-latest
     steps:
       - name: MA - Cache Node Modules
-        id: cache
+        id: ma-cache-node-modules
         uses: actions/cache@v4
         with:
-          path: backend/node_modules
+          path: node_modules
           key: node-modules-cache
       
       # Using names, because name steps are more descriptive
@@ -46,4 +46,27 @@ jobs:
         with:
           name: ma-backend-artifact
           path: backend/build/artifact.zip
+
+
+  mubashir-lint:
+    # needs making it dependency tree, but you can run in paralell if you want to
+    needs: [mubashir-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: MA - Lint Checkout
+        uses: actions/checkout@v1
+
+      - name: MA - Cache Node Modules
+        id: ma-cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-cache
       
+      # only install dependency if condition is true, means if cache is not available
+      - name: MA - Install Dependencies
+        if: steps.ma-cache-node-modules.outputs.cache-hit != 'true'
+        run: cd backend && npm i
+
+      - name: MA - Lint the Code
+        run: cd backend && npm run lint
