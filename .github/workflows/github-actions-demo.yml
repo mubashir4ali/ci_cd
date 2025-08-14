@@ -44,6 +44,6 @@ jobs:
       - name: MA - Store Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-artifact
+          name: ma-backend-artifact
           path: backend/build/artifact.zip
       
