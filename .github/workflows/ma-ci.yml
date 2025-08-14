@@ -76,3 +76,32 @@ jobs:
 
       - name: MA - Lint the Code
         run: cd backend && npm run lint
+
+  mubashir-test:
+    needs: [mubashir-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: MA - Test Checkout
+        uses: actions/checkout@v1
+
+      # This is Repeating, TODO:: make them reusable actions
+      - name: MA - Cache Test Node Modules
+        id: ma-cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: backend/node_modules
+          # key: node-modules-cache
+          key: node-modules-cache-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            node-modules-cache-${{ runner.os }}-
+
+      - name: MA - Install Dependencies for Test
+        if: steps.ma-cache-node-modules.outputs.cache-hit != 'true'
+        run: cd backend && npm i
+
+      - name: MA - Run Unit Tests
+        run: cd backend && npm t
+
+
+# Why keeping Lint, Test etc separately instead of one job
+# It is easier to debug and easier to manage
