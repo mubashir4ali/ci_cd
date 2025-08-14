@@ -102,6 +102,16 @@ jobs:
       - name: MA - Run Unit Tests
         run: cd backend && npm t
 
+  mubashir-security-audit:
+    needs: [mubashir-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: MA Security Checkout
+        uses: actions/checkout@v1
+
+      - name: MA Check for security issue
+        run: cd backend && npm audit --audit-level=medium
+
 
 # Why keeping Lint, Test etc separately instead of one job
 # It is easier to debug and easier to manage
